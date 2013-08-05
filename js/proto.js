@@ -1,14 +1,15 @@
 $(document).ready( function(){
 
   var elementToInsert = null;
+  var elHTML = "";
 
   function createElement(el) {
-    var tag = el.attr("data-value");
+    //var tag = el.attr("data-value");
     var button = "<input type=\"button\" value=\"Button\">";
 
     var textbox = "<input type=\"text\" placeholder=\"Type here...\" style=\"width:80px !important;\">";
 
-    switch ( tag ) {
+    switch ( elHTML ) {
       case "bootstrap/button": return $(button);
       case "bootstrap/textbox": return $(textbox);
       default: return "whoops"
@@ -19,23 +20,37 @@ $(document).ready( function(){
   function handleDragStart(e) {
     $( ".component" ).css({opacity: 0.5});
     $(this).css({opacity: 1});
-
-    elementToInsert = createElement($(this));
+    elHTML = $(this).attr("data-value");
+    console.log($(this).attr("data-value"));
   };
 
   function handleDragEnd(e) {
     $( ".component" ).css({opacity: 1});
+    elHTML = "";
+    if (elementToInsert) {
+      elementToInsert.remove();      
+    }
+
     elementToInsert = null;
   };
 
   function handleDragEnter(e) {
+    // TODO(georgeciobanu): enable non-containers as drag targets,
+    // defer to their parent
     $(this).css({opacity: 0.5});
+    if (!elementToInsert) {
+      elementToInsert = createElement();
+    };
     $(this).append(elementToInsert);
   };
 
   function handleDragLeave(e) {
     $(this).css({opacity: 1});
-    //$(this).remove(elementToInsert);
+    if (elementToInsert) {
+      elementToInsert.remove();      
+    }
+
+    elementToInsert = null;
   };
 
   function handleDragOver(e) {
